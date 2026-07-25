@@ -1,6 +1,6 @@
-# Wi-Fi-Deployment-Planning-Using-a-Multi--Metric-Decision--Layer-Function
+# Wi-Fi-Deployment-Planning-Using-a-Multi-Metric-Decision-Layer-Function
 
-##Overview
+## Overview
 Traditional Wi-Fi deployment planning relies on simple heuristics — like capping the number of users per Access Point (AP) — which fail to capture the real, multi-dimensional nature of network congestion. This project proposes an alternative: a Network Health Index (NHI), a composite metric that combines five key performance indicators into a single, interpretable score.
 
 The system simulates an IEEE 802.11 Wi-Fi infrastructure network in NetSim under increasing load (2 to 20 nodes transmitting CBR traffic), extracts performance metrics, and processes them in Python to classify the network's health as:
@@ -9,8 +9,8 @@ The system simulates an IEEE 802.11 Wi-Fi infrastructure network in NetSim under
 🟡 Risky (Degraded)
 🔴 Unsuitable (Failure)
 
-##Key Features
-Multi-metric evaluation across throughput, delay, packet loss, collision rate, and backoff failure rate
+## Key Features
+* Multi-metric evaluation across throughput, delay, packet loss, collision rate, and backoff failure rate
 Dynamic weighting — metric importance adapts based on current network conditions rather than using static weights
 Min-max normalization with epsilon handling to avoid divide-by-zero and score collapse
 Adaptive thresholding using quantile-based cutoffs (70th/40th percentile) instead of fixed thresholds
