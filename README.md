@@ -17,7 +17,10 @@ The system simulates an IEEE 802.11 Wi-Fi infrastructure network in NetSim under
 * Adaptive thresholding using quantile-based cutoffs (70th/40th percentile) instead of fixed thresholds
 * Critical point detection — automatically identifies the node count at which the network becomes unsuitable
 * Visualization suite — NHI vs. nodes, metric trends, weighted contribution breakdown, weight evolution, and decision zone plots
-  
+
+## Block Diagram
+<img width="1027" height="606" alt="Screenshot 2026-07-25 173156" src="https://github.com/user-attachments/assets/c2465fae-c4bc-40c9-b661-289d45ba8087" />
+
 ## Theoretical Background
 IEEE 802.11 networks use a MAC-layer protocol called CSMA/CA (Carrier Sense Multiple Access with Collision Avoidance) to arbitrate shared-medium access. Since wireless nodes cannot detect collisions while transmitting (unlike wired Ethernet's CSMA/CD), 802.11 relies on collision avoidance rather than detection:
 
