@@ -24,9 +24,10 @@ IEEE 802.11 networks use a MAC-layer protocol called CSMA/CA (Carrier Sense Mult
 
 * Before transmitting, a node senses the channel and waits if it's busy: If the channel is free, the node waits a random backoff interval before transmitting, reducing the chance two nodes transmit simultaneously.
 * If a collision does occur, the sender doesn't receive an ACK, assumes a collision happened, and doubles its contention window (binary exponential backoff) before retrying
-* This mechanism, formally analyzed in Bianchi's Distributed Coordination Function (DCF) model (Bianchi, 2000), is efficient at low node density but degrades non-linearly as more nodes contend for the same AP. As node count rises:
 
-The probability of simultaneous transmission attempts increases → collision rate rises
+This mechanism, formally analyzed in Bianchi's Distributed Coordination Function (DCF) model (Bianchi, 2000), is efficient at low node density but degrades non-linearly as more nodes contend for the same AP. As node count rises:
+
+* The probability of simultaneous transmission attempts increases → collision rate rises
 * Nodes spend more time backing off and retrying → delay and backoff failure rate rise
 * Failed/retried packets consume airtime without delivering data → effective throughput falls
 * Retry limits are eventually exceeded → packets are dropped, raising packet loss
@@ -48,21 +49,17 @@ For metrics where lower is better (delay, packet loss, collision rate, backoff f
 
 This ensures all five metrics are directionally consistent — a higher score always means better network health — before they're combined. A small epsilon term is added to the denominator to avoid division-by-zero when a metric is constant across all samples, and scores are clipped to a minimum of 0.05 to prevent a metric from collapsing to zero and being effectively erased from the composite.
 
-Step 2 — Dynamic Weighting. Rather than fixed weights, each metric's weight is computed as a function of how degraded that metric currently is relative to its worst observed value. For example, the packet loss weight grows as packet loss itself grows:
-
-w_PL = 0.2 + 0.2 × (PacketLoss / PacketLoss_max)
+* Step 2 — Dynamic Weighting. Rather than fixed weights, each metric's weight is computed as a function of how degraded that metric currently is relative to its worst observed value. For example, the packet loss weight grows as packet loss itself grows: w_PL = 0.2 + 0.2 × (PacketLoss / PacketLoss_max)
 
 All weights are then normalized so they sum to 1. The intuition: as a network becomes more congested, the metrics driving that congestion should count for more in the final score — the model self-adjusts its own sensitivity rather than treating all five factors as equally important at all times.
 
-Step 3 — Composite Score. The final Network Health Index combines the weighted scores and rescales to a 0–10 range for interpretability:
+* Step 3 — Composite Score. The final Network Health Index combines the weighted scores and rescales to a 0–10 range for interpretability: NHI = Σ(w_i × score_i) × 10
 
-NHI = Σ(w_i × score_i) × 10
+* Step 4 — Adaptive Decision Thresholds. Instead of hardcoded cutoffs, thresholds are derived from the quantiles of the observed NHI distribution itself (70th and 40th percentile), making the classification self-calibrating to the specific dataset rather than relying on arbitrary fixed numbers:
 
-Step 4 — Adaptive Decision Thresholds. Instead of hardcoded cutoffs, thresholds are derived from the quantiles of the observed NHI distribution itself (70th and 40th percentile), making the classification self-calibrating to the specific dataset rather than relying on arbitrary fixed numbers:
-
-NHI > 70th percentile → Suitable
-NHI > 40th percentile → Risky
-Otherwise → Unsuitable
+  * NHI > 70th percentile → Suitable
+  * NHI > 40th percentile → Risky
+  * Otherwise → Unsuitable
 
 This is conceptually similar to statistical process control, where thresholds are derived from a system's own behavior rather than imposed externally.
 
