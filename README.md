@@ -1,7 +1,8 @@
 # Wi-Fi-Deployment-Planning-Using-a-Multi-Metric-Decision-Layer-Function
 
 ## Overview
-Traditional Wi-Fi deployment planning relies on simple heuristics — like capping the number of users per Access Point (AP) — which fail to capture the real, multi-dimensional nature of network congestion. This project proposes an alternative: a Network Health Index (NHI), a composite metric that combines five key performance indicators into a single, interpretable score.
+Traditional Wi-Fi deployment planning relies on simple heuristics — like capping the number of users per Access Point (AP) — which fail to capture the real, multi-dimensional nature of network congestion. 
+This project proposes an alternative: a Network Health Index (NHI), a composite metric that combines five key performance indicators into a single, interpretable score.
 
 The system simulates an IEEE 802.11 Wi-Fi infrastructure network in NetSim under increasing load (2 to 20 nodes transmitting CBR traffic), extracts performance metrics, and processes them in Python to classify the network's health as:
 
@@ -11,18 +12,18 @@ The system simulates an IEEE 802.11 Wi-Fi infrastructure network in NetSim under
 
 ## Key Features
 * Multi-metric evaluation across throughput, delay, packet loss, collision rate, and backoff failure rate
-Dynamic weighting — metric importance adapts based on current network conditions rather than using static weights
-Min-max normalization with epsilon handling to avoid divide-by-zero and score collapse
-Adaptive thresholding using quantile-based cutoffs (70th/40th percentile) instead of fixed thresholds
-Critical point detection — automatically identifies the node count at which the network becomes unsuitable
-Visualization suite — NHI vs. nodes, metric trends, weighted contribution breakdown, weight evolution, and decision zone plots
-Theoretical Background
+* Dynamic weighting — metric importance adapts based on current network conditions rather than using static weights
+* Min-max normalization with epsilon handling to avoid divide-by-zero and score collapse
+* Adaptive thresholding using quantile-based cutoffs (70th/40th percentile) instead of fixed thresholds
+* Critical point detection — automatically identifies the node count at which the network becomes unsuitable
+* Visualization suite — NHI vs. nodes, metric trends, weighted contribution breakdown, weight evolution, and decision zone plots
+  
+## Theoretical Background
 Why Wi-Fi Networks Degrade Under Load
+* IEEE 802.11 networks use a MAC-layer protocol called CSMA/CA (Carrier Sense Multiple Access with Collision Avoidance) to arbitrate shared-medium access. Since wireless nodes cannot detect collisions while transmitting (unlike wired Ethernet's CSMA/CD), 802.11 relies on collision avoidance rather than detection:
 
-IEEE 802.11 networks use a MAC-layer protocol called CSMA/CA (Carrier Sense Multiple Access with Collision Avoidance) to arbitrate shared-medium access. Since wireless nodes cannot detect collisions while transmitting (unlike wired Ethernet's CSMA/CD), 802.11 relies on collision avoidance rather than detection:
-
-Before transmitting, a node senses the channel and waits if it's busy
-If the channel is free, the node waits a random backoff interval before transmitting, reducing the chance two nodes transmit simultaneously
+** Before transmitting, a node senses the channel and waits if it's busy
+*** If the channel is free, the node waits a random backoff interval before transmitting, reducing the chance two nodes transmit simultaneously
 If a collision does occur, the sender doesn't receive an ACK, assumes a collision happened, and doubles its contention window (binary exponential backoff) before retrying
 
 This mechanism, formally analyzed in Bianchi's Distributed Coordination Function (DCF) model (Bianchi, 2000), is efficient at low node density but degrades non-linearly as more nodes contend for the same AP. As node count rises:
