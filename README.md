@@ -40,7 +40,7 @@ Conventional deployment planning imposes a static cap (e.g., "25 users per AP") 
 * It is metric-blind. A fixed user cap doesn't account for traffic pattern, packet size, or the specific mix of delay/loss/collision behavior a network is actually experiencing — two networks with the same node count can have very different health depending on application demand.
 * It is non-adaptive. The relative importance of throughput vs. delay vs. loss changes depending on how congested the network already is; a static rule can't reflect this.
   
-The Network Health Index (NHI): Theoretical Formulation
+## The Network Health Index (NHI): Theoretical Formulation
 The NHI is designed to address both weaknesses using a weighted, normalized composite scoring function — a common approach in multi-criteria decision analysis (MCDA).
 
 * Step 1 — Normalization. Each raw metric is rescaled to a common [0,1] range using min-max normalization:
@@ -50,11 +50,14 @@ The NHI is designed to address both weaknesses using a weighted, normalized comp
 
 This ensures all five metrics are directionally consistent — a higher score always means better network health — before they're combined. A small epsilon term is added to the denominator to avoid division-by-zero when a metric is constant across all samples, and scores are clipped to a minimum of 0.05 to prevent a metric from collapsing to zero and being effectively erased from the composite.
 
-* Step 2 — Dynamic Weighting. Rather than fixed weights, each metric's weight is computed as a function of how degraded that metric currently is relative to its worst observed value. For example, the packet loss weight grows as packet loss itself grows: w_PL = 0.2 + 0.2 × (PacketLoss / PacketLoss_max)
+* Step 2 — Dynamic Weighting. Rather than fixed weights, each metric's weight is computed as a function of how degraded that metric currently is relative to its worst observed value.
+  * For example, the packet loss weight grows as packet loss itself grows:
+      * w_PL = 0.2 + 0.2 × (PacketLoss / PacketLoss_max)
 
 All weights are then normalized so they sum to 1. The intuition: as a network becomes more congested, the metrics driving that congestion should count for more in the final score — the model self-adjusts its own sensitivity rather than treating all five factors as equally important at all times.
 
-* Step 3 — Composite Score. The final Network Health Index combines the weighted scores and rescales to a 0–10 range for interpretability: NHI = Σ(w_i × score_i) × 10
+* Step 3 — Composite Score. The final Network Health Index combines the weighted scores and rescales to a 0–10 range for interpretability:
+  * NHI = Σ(w_i × score_i) × 10
 
 * Step 4 — Adaptive Decision Thresholds. Instead of hardcoded cutoffs, thresholds are derived from the quantiles of the observed NHI distribution itself (70th and 40th percentile), making the classification self-calibrating to the specific dataset rather than relying on arbitrary fixed numbers:
 
@@ -78,8 +81,8 @@ The theoretical contribution isn't the individual metrics (which are standard 80
 * Visualize results and compare against traditional heuristic-based methods
 
 ## Tech Stack
-NetSim — network topology design and simulation (AP, wireless nodes, switch, wired backbone, CBR traffic)
-Python 3
-pandas — data handling
-numpy — numerical computation
-matplotlib — visualization
+* NetSim — network topology design and simulation (AP, wireless nodes, switch, wired backbone, CBR traffic)
+* Python 3
+  * pandas — data handling
+  * numpy — numerical computation
+  * matplotlib — visualization
