@@ -44,7 +44,7 @@ Conventional deployment planning imposes a static cap (e.g., "25 users per AP") 
 The Network Health Index (NHI): Theoretical Formulation
 The NHI is designed to address both weaknesses using a weighted, normalized composite scoring function — a common approach in multi-criteria decision analysis (MCDA).
 
-* Step 1 — Normalization. Each raw metric is rescaled to a common [0,1] range using min-max normalization: X_norm = (X − X_min) / (X_max − X_min)
+* Step 1 — Normalization. Each raw metric is rescaled to a common [0,1] range using min-max normalization: X_norm = (X − X_min) / (X_max − X_min).
 For metrics where lower is better (delay, packet loss, collision rate, backoff failure), the score is inverted: Score = 1 − X_norm
 
 This ensures all five metrics are directionally consistent — a higher score always means better network health — before they're combined. A small epsilon term is added to the denominator to avoid division-by-zero when a metric is constant across all samples, and scores are clipped to a minimum of 0.05 to prevent a metric from collapsing to zero and being effectively erased from the composite.
@@ -63,19 +63,20 @@ All weights are then normalized so they sum to 1. The intuition: as a network be
 
 This is conceptually similar to statistical process control, where thresholds are derived from a system's own behavior rather than imposed externally.
 
-Why This Matters
+## Why This Matters
 
 The theoretical contribution isn't the individual metrics (which are standard 802.11 performance indicators) — it's the decision layer on top of them: a reproducible, quantitative way to convert five interacting, sometimes contradictory signals into a single actionable classification, without relying on a network engineer's subjective judgment call.
 
-Methodology
-Configure and run Wi-Fi simulations in NetSim for varying node counts (2, 4, 6, 10, 14, 20)
-Collect performance metrics: throughput, delay, packet loss, collision rate, backoff failure rate
-Normalize each metric to a common [0.05, 1] scale (inverted for "lower is better" metrics)
-Compute dynamic weights per metric based on relative performance degradation
-Calculate the composite NHI score: NHI = Σ(weight_i × score_i) × 10
-Classify network health against adaptive quantile-based thresholds
-Visualize results and compare against traditional heuristic-based methods
-Tech Stack
+## Methodology
+* Configure and run Wi-Fi simulations in NetSim for varying node counts (2, 4, 6, 10, 14, 20)
+* Collect performance metrics: throughput, delay, packet loss, collision rate, backoff failure rate
+* Normalize each metric to a common [0.05, 1] scale (inverted for "lower is better" metrics)
+* Compute dynamic weights per metric based on relative performance degradation
+* Calculate the composite NHI score: NHI = Σ(weight_i × score_i) × 10
+* Classify network health against adaptive quantile-based thresholds
+* Visualize results and compare against traditional heuristic-based methods
+
+## Tech Stack
 NetSim — network topology design and simulation (AP, wireless nodes, switch, wired backbone, CBR traffic)
 Python 3
 pandas — data handling
