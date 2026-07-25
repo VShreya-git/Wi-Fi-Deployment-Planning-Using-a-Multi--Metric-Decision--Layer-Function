@@ -19,7 +19,6 @@ The system simulates an IEEE 802.11 Wi-Fi infrastructure network in NetSim under
 * Visualization suite — NHI vs. nodes, metric trends, weighted contribution breakdown, weight evolution, and decision zone plots
   
 ## Theoretical Background
-Why Wi-Fi Networks Degrade Under Load
 IEEE 802.11 networks use a MAC-layer protocol called CSMA/CA (Carrier Sense Multiple Access with Collision Avoidance) to arbitrate shared-medium access. Since wireless nodes cannot detect collisions while transmitting (unlike wired Ethernet's CSMA/CD), 802.11 relies on collision avoidance rather than detection:
 
 * Before transmitting, a node senses the channel and waits if it's busy: If the channel is free, the node waits a random backoff interval before transmitting, reducing the chance two nodes transmit simultaneously.
@@ -44,8 +43,10 @@ Conventional deployment planning imposes a static cap (e.g., "25 users per AP") 
 The Network Health Index (NHI): Theoretical Formulation
 The NHI is designed to address both weaknesses using a weighted, normalized composite scoring function — a common approach in multi-criteria decision analysis (MCDA).
 
-* Step 1 — Normalization. Each raw metric is rescaled to a common [0,1] range using min-max normalization: X_norm = (X − X_min) / (X_max − X_min).
-For metrics where lower is better (delay, packet loss, collision rate, backoff failure), the score is inverted: Score = 1 − X_norm
+* Step 1 — Normalization. Each raw metric is rescaled to a common [0,1] range using min-max normalization:
+  * X_norm = (X − X_min) / (X_max − X_min).
+  * For metrics where lower is better (delay, packet loss, collision rate, backoff failure), the score is inverted:
+     * Score = 1 − X_norm
 
 This ensures all five metrics are directionally consistent — a higher score always means better network health — before they're combined. A small epsilon term is added to the denominator to avoid division-by-zero when a metric is constant across all samples, and scores are clipped to a minimum of 0.05 to prevent a metric from collapsing to zero and being effectively erased from the composite.
 
