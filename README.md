@@ -20,38 +20,31 @@ The system simulates an IEEE 802.11 Wi-Fi infrastructure network in NetSim under
   
 ## Theoretical Background
 Why Wi-Fi Networks Degrade Under Load
-* IEEE 802.11 networks use a MAC-layer protocol called CSMA/CA (Carrier Sense Multiple Access with Collision Avoidance) to arbitrate shared-medium access. Since wireless nodes cannot detect collisions while transmitting (unlike wired Ethernet's CSMA/CD), 802.11 relies on collision avoidance rather than detection:
+IEEE 802.11 networks use a MAC-layer protocol called CSMA/CA (Carrier Sense Multiple Access with Collision Avoidance) to arbitrate shared-medium access. Since wireless nodes cannot detect collisions while transmitting (unlike wired Ethernet's CSMA/CD), 802.11 relies on collision avoidance rather than detection:
 
-** Before transmitting, a node senses the channel and waits if it's busy
-*** If the channel is free, the node waits a random backoff interval before transmitting, reducing the chance two nodes transmit simultaneously
-If a collision does occur, the sender doesn't receive an ACK, assumes a collision happened, and doubles its contention window (binary exponential backoff) before retrying
-
-This mechanism, formally analyzed in Bianchi's Distributed Coordination Function (DCF) model (Bianchi, 2000), is efficient at low node density but degrades non-linearly as more nodes contend for the same AP. As node count rises:
+* Before transmitting, a node senses the channel and waits if it's busy: If the channel is free, the node waits a random backoff interval before transmitting, reducing the chance two nodes transmit simultaneously.
+* If a collision does occur, the sender doesn't receive an ACK, assumes a collision happened, and doubles its contention window (binary exponential backoff) before retrying
+* This mechanism, formally analyzed in Bianchi's Distributed Coordination Function (DCF) model (Bianchi, 2000), is efficient at low node density but degrades non-linearly as more nodes contend for the same AP. As node count rises:
 
 The probability of simultaneous transmission attempts increases → collision rate rises
-Nodes spend more time backing off and retrying → delay and backoff failure rate rise
-Failed/retried packets consume airtime without delivering data → effective throughput falls
-Retry limits are eventually exceeded → packets are dropped, raising packet loss
+* Nodes spend more time backing off and retrying → delay and backoff failure rate rise
+* Failed/retried packets consume airtime without delivering data → effective throughput falls
+* Retry limits are eventually exceeded → packets are dropped, raising packet loss
 
 These five effects are coupled — they don't degrade independently — which is precisely why a single metric (e.g., just throughput) gives an incomplete picture of network health, and motivates a composite index approach.
 
-Limitations of Heuristic Deployment Planning
+## Limitations of Heuristic Deployment Planning
 
 Conventional deployment planning imposes a static cap (e.g., "25 users per AP") derived from rule-of-thumb estimates or vendor airtime-utilization guidelines. This approach has two theoretical weaknesses:
 
-It is metric-blind. A fixed user cap doesn't account for traffic pattern, packet size, or the specific mix of delay/loss/collision behavior a network is actually experiencing — two networks with the same node count can have very different health depending on application demand.
-It is non-adaptive. The relative importance of throughput vs. delay vs. loss changes depending on how congested the network already is; a static rule can't reflect this.
+* It is metric-blind. A fixed user cap doesn't account for traffic pattern, packet size, or the specific mix of delay/loss/collision behavior a network is actually experiencing — two networks with the same node count can have very different health depending on application demand.
+* It is non-adaptive. The relative importance of throughput vs. delay vs. loss changes depending on how congested the network already is; a static rule can't reflect this.
+  
 The Network Health Index (NHI): Theoretical Formulation
-
 The NHI is designed to address both weaknesses using a weighted, normalized composite scoring function — a common approach in multi-criteria decision analysis (MCDA).
 
-Step 1 — Normalization. Each raw metric is rescaled to a common [0,1] range using min-max normalization:
-
-X_norm = (X − X_min) / (X_max − X_min)
-
-For metrics where lower is better (delay, packet loss, collision rate, backoff failure), the score is inverted:
-
-Score = 1 − X_norm
+* Step 1 — Normalization. Each raw metric is rescaled to a common [0,1] range using min-max normalization: X_norm = (X − X_min) / (X_max − X_min)
+For metrics where lower is better (delay, packet loss, collision rate, backoff failure), the score is inverted: Score = 1 − X_norm
 
 This ensures all five metrics are directionally consistent — a higher score always means better network health — before they're combined. A small epsilon term is added to the denominator to avoid division-by-zero when a metric is constant across all samples, and scores are clipped to a minimum of 0.05 to prevent a metric from collapsing to zero and being effectively erased from the composite.
 
